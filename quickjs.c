@@ -28,7 +28,12 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
+
+#ifdef _MSC_VER
+#else
 #include <sys/time.h>
+#endif
+
 #include <time.h>
 #include <fenv.h>
 #include <math.h>
@@ -1017,11 +1022,19 @@ static JSValue JS_CallFree(JSContext *ctx, JSValue func_obj, JSValueConst this_o
                            int argc, JSValueConst *argv);
 static JSValue JS_InvokeFree(JSContext *ctx, JSValue this_val, JSAtom atom,
                              int argc, JSValueConst *argv);
-static __exception int JS_ToArrayLengthFree(JSContext *ctx, uint32_t *plen,
+static
+#ifndef _MSC_VER
+__exception
+#endif
+int JS_ToArrayLengthFree(JSContext *ctx, uint32_t *plen,
                                             JSValue val, BOOL is_array_ctor);
 static JSValue JS_EvalObject(JSContext *ctx, JSValueConst this_obj,
                              JSValueConst val, int flags, int scope_idx);
-JSValue __attribute__((format(printf, 2, 3))) JS_ThrowInternalError(JSContext *ctx, const char *fmt, ...);
+JSValue 
+#ifndef _MSC_VER
+__attribute__((format(printf, 2, 3))) 
+#endif
+JS_ThrowInternalError(JSContext *ctx, const char *fmt, ...);
 static __maybe_unused void JS_DumpAtoms(JSRuntime *rt);
 static __maybe_unused void JS_DumpString(JSRuntime *rt,
                                                   const JSString *p);

@@ -166,7 +166,11 @@ int dbuf_putstr(DynBuf *s, const char *str)
     return dbuf_put(s, (const uint8_t *)str, strlen(str));
 }
 
-int __attribute__((format(printf, 2, 3))) dbuf_printf(DynBuf *s,
+int 
+#ifndef _MSC_VER
+__attribute__((format(printf, 2, 3)))
+#endif
+dbuf_printf(DynBuf *s,
                                                       const char *fmt, ...)
 {
     va_list ap;

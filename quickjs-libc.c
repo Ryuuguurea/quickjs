@@ -28,19 +28,31 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
-#include <unistd.h>
+
+
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/time.h>
+
 #include <time.h>
 #include <signal.h>
 #include <limits.h>
 #include <sys/stat.h>
+
+#ifdef _MSC_VER
+
+#else
+#include <unistd.h>
+#include <sys/time.h>
 #include <dirent.h>
+#include <utime.h>
+#endif
+
 #if defined(_WIN32)
 #include <windows.h>
 #include <conio.h>
-#include <utime.h>
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
 #else
 #include <dlfcn.h>
 #include <termios.h>
@@ -797,9 +809,11 @@ static void js_std_file_finalizer(JSRuntime *rt, JSValue val)
     JSSTDFile *s = JS_GetOpaque(val, js_std_file_class_id);
     if (s) {
         if (s->f && s->close_in_finalizer) {
+#ifndef _MSC_VER
             if (s->is_popen)
                 pclose(s->f);
             else
+#endif
                 fclose(s->f);
         }
         js_free_rt(rt, s);
